@@ -1,0 +1,937 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Laboratorio guiado de 40 minutos para reforzar Express, DTO, express-validator, MongoDB, cookies y SemVer."
+    />
+    <title>API Lab · Notas rápidas</title>
+    <link rel="stylesheet" href="styles.css?v=4" />
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+    <div class="ambient ambient--one" aria-hidden="true"></div>
+    <div class="ambient ambient--two" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <a class="brand" href="#inicio" aria-label="Ir al inicio">
+        <svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true">
+          <path d="M7 13.5 24 4l17 9.5v21L24 44 7 34.5z" />
+          <path d="m16 20 8-4.5L32 20v9l-8 4.5-8-4.5z" />
+        </svg>
+        <span>
+          <small>Campuslands</small>
+          <strong>API LAB / 01</strong>
+        </span>
+      </a>
+
+      <div class="session-tools" aria-label="Herramientas de la sesión">
+        <div class="timer" aria-label="Cronómetro de 40 minutos">
+          <span class="timer__pulse" aria-hidden="true"></span>
+          <span id="timerDisplay" class="timer__time" aria-live="polite">40:00</span>
+          <button id="timerToggle" class="icon-button" type="button" title="Iniciar cronómetro" aria-label="Iniciar cronómetro">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z" /></svg>
+          </button>
+          <button id="timerReset" class="icon-button" type="button" title="Reiniciar cronómetro" aria-label="Reiniciar cronómetro">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.34 5.66M20 4v7h-7" /></svg>
+          </button>
+        </div>
+        <button id="focusToggle" class="focus-button" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M8 21H3v-5m13 5h5v-5" /></svg>
+          <span>Modo enfoque</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Ruta del laboratorio">
+        <div class="progress-card">
+          <div class="progress-card__head">
+            <span>Progreso</span>
+            <strong id="progressLabel">0%</strong>
+          </div>
+          <div class="progress-track" aria-hidden="true">
+            <span id="progressBar"></span>
+          </div>
+          <p id="progressMessage">Una API. Siete checkpoints. Cero magia.</p>
+        </div>
+
+        <nav class="step-nav" id="stepNav">
+          <a class="step-nav__item is-active" href="#inicio" data-section="inicio">
+            <span class="step-nav__number">00</span>
+            <span><strong>Misión</strong></span>
+          </a>
+          <a class="step-nav__item" href="#express" data-section="express">
+            <span class="step-nav__number">01</span>
+            <span><strong>Express + MVC</strong></span>
+          </a>
+          <a class="step-nav__item" href="#dto" data-section="dto">
+            <span class="step-nav__number">02</span>
+            <span><strong>DTO</strong></span>
+          </a>
+          <a class="step-nav__item" href="#validacion" data-section="validacion">
+            <span class="step-nav__number">03</span>
+            <span><strong>Validación</strong></span>
+          </a>
+          <a class="step-nav__item" href="#mongodb" data-section="mongodb">
+            <span class="step-nav__number">04</span>
+            <span><strong>CRUD + MongoDB</strong></span>
+          </a>
+          <a class="step-nav__item" href="#cookies" data-section="cookies">
+            <span class="step-nav__number">05</span>
+            <span><strong>Cookies</strong></span>
+          </a>
+          <a class="step-nav__item" href="#semver" data-section="semver">
+            <span class="step-nav__number">06</span>
+            <span><strong>SemVer</strong></span>
+          </a>
+          <a class="step-nav__item" href="#pruebas" data-section="pruebas">
+            <span class="step-nav__number">07</span>
+            <span><strong>Pruebas CRUD</strong></span>
+          </a>
+        </nav>
+
+        <div class="sidebar__footer">
+          <span class="status-dot"></span>
+          <span>Ruta <strong>/api/v1/notas</strong></span>
+        </div>
+      </aside>
+
+      <main id="contenido">
+        <section id="inicio" class="lesson hero" data-step="0">
+          <div class="hero__eyebrow reveal">
+            <span>Refuerzo guiado</span>
+            <span>40 minutos</span>
+            <span>Nivel básico</span>
+          </div>
+
+          <div class="hero__grid">
+            <div class="hero__copy reveal reveal--delay-1">
+              <p class="kicker">MISIÓN DE HOY</p>
+              <h1>Construye una API que sí<br /><em>recuerda</em> tus notas.</h1>
+              <p class="hero__lead">
+                Un ejercicio corto para conectar seis ideas que ya conoces. Al terminar podrás crear, consultar,
+                actualizar y eliminar notas en MongoDB usando una arquitectura MVC fácil de seguir.
+              </p>
+              <div class="hero__actions">
+                <button class="primary-button" type="button" data-start-lab>
+                  Iniciar laboratorio
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 14 0m-6-6 6 6-6 6" /></svg>
+                </button>
+                <a class="text-link" href="#pruebas">Ver resultado final</a>
+              </div>
+            </div>
+
+            <div class="mission-card reveal reveal--delay-2" aria-label="Resumen del ejercicio">
+              <div class="mission-card__top">
+                <span class="mission-card__label">OBJETIVO</span>
+                <span class="mission-card__code">CL-API-01</span>
+              </div>
+              <div class="mission-orbit" aria-hidden="true">
+                <span class="mission-orbit__core">API</span>
+                <span class="orbit-node orbit-node--one">DTO</span>
+                <span class="orbit-node orbit-node--two">REST</span>
+                <span class="orbit-node orbit-node--three">DB</span>
+              </div>
+              <h2>Notas rápidas</h2>
+              <p>Construir un CRUD completo de notas, validar sus datos y recordar la última categoría con una cookie.</p>
+              <div class="endpoint-pill"><span>CRUD</span> /api/v1/notas</div>
+            </div>
+          </div>
+
+          <div class="brief-grid reveal reveal--delay-3">
+            <article>
+              <span class="brief-grid__icon">01</span>
+              <h3>Entrada</h3>
+              <p>Un JSON con <code>titulo</code>, <code>contenido</code> y <code>categoria</code>.</p>
+            </article>
+            <article>
+              <span class="brief-grid__icon">02</span>
+              <h3>Proceso</h3>
+              <p>Ruta → validar → DTO → controlador → servicio → MongoDB.</p>
+            </article>
+            <article>
+              <span class="brief-grid__icon">03</span>
+              <h3>Salida</h3>
+              <p>Respuestas <code>200</code>, <code>201</code>, <code>204</code> y <code>404</code>.</p>
+            </article>
+          </div>
+
+          <div class="starting-point reveal">
+            <div>
+              <span class="section-index">PUNTO DE PARTIDA</span>
+              <h2>Todo listo para programar</h2>
+            </div>
+            <p>
+              Node.js, Express, Mongoose, express-validator y cookie-parser ya están disponibles. No instalaremos nada:
+              empezamos directamente escribiendo el código.
+            </p>
+            <div class="file-tree" aria-label="Estructura de archivos">
+              <span>api-notas/</span>
+              <span>├── package.json</span>
+              <span>└── src/</span>
+              <span>&nbsp;&nbsp;&nbsp;├── app.js</span>
+              <span>&nbsp;&nbsp;&nbsp;├── server.js</span>
+              <span>&nbsp;&nbsp;&nbsp;├── controllers/nota.controller.js</span>
+              <span>&nbsp;&nbsp;&nbsp;├── services/nota.service.js</span>
+              <span>&nbsp;&nbsp;&nbsp;├── dtos/crear-nota.dto.js</span>
+              <span>&nbsp;&nbsp;&nbsp;├── dtos/actualizar-nota.dto.js</span>
+              <span>&nbsp;&nbsp;&nbsp;├── models/nota.model.js</span>
+              <span>&nbsp;&nbsp;&nbsp;├── validators/nota.validator.js</span>
+              <span>&nbsp;&nbsp;&nbsp;├── routes/nota.routes.js</span>
+              <span>&nbsp;&nbsp;&nbsp;└── middlewares/error.middleware.js</span>
+            </div>
+          </div>
+
+          <div class="build-order">
+            <div class="build-order__head"><span>ORDEN REAL DE CONSTRUCCIÓN</span><strong>Sigue las flechas, sin saltar bloques</strong></div>
+            <div class="build-order__rail">
+              <span><b>0</b>Base</span><i>→</i><span><b>1</b>Express</span><i>→</i><span><b>2</b>DTO</span><i>→</i><span><b>3</b>Validar</span><i>→</i><span><b>4</b>MVC + CRUD</span><i>→</i><span><b>5</b>Cookies</span><i>→</i><span><b>6</b>SemVer</span><i>→</i><span><b>7</b>Probar</span>
+            </div>
+            <p>Cada barra de código indica una acción: <strong>CREA</strong> un archivo nuevo, <strong>CONTINÚA</strong> en el mismo archivo o <strong>REEMPLAZA</strong> su contenido completo.</p>
+          </div>
+
+          <article class="code-panel code-panel--green" data-code-panel>
+            <div class="code-panel__bar"><div><i></i><i></i><i></i></div><span>PASO 0 · ARCHIVO YA PREPARADO · package.json</span><button type="button" data-copy-code>Copiar código</button></div>
+            <pre><code><span class="code-line"><b>1</b><span>{</span></span>
+<span class="code-line"><b>2</b><span>  <q>"name"</q>: <q>"api-notas-campuslands"</q>, <small>// Nombre del proyecto.</small></span></span>
+<span class="code-line"><b>3</b><span>  <q>"version"</q>: <q>"1.0.0"</q>, <small>// Versión inicial.</small></span></span>
+<span class="code-line"><b>4</b><span>  <q>"type"</q>: <q>"module"</q>, <small>// Habilita import y export.</small></span></span>
+<span class="code-line"><b>5</b><span>  <q>"scripts"</q>: {</span></span>
+<span class="code-line"><b>6</b><span>    <q>"start"</q>: <q>"node src/server.js"</q>, <small>// Ejecuta la API.</small></span></span>
+<span class="code-line"><b>7</b><span>    <q>"dev"</q>: <q>"node --watch src/server.js"</q> <small>// Reinicia al guardar cambios.</small></span></span>
+<span class="code-line"><b>8</b><span>  },</span></span>
+<span class="code-line"><b>9</b><span>  <q>"dependencies"</q>: {</span></span>
+<span class="code-line"><b>10</b><span>    <q>"cookie-parser"</q>: <q>"^1.4.7"</q>,</span></span>
+<span class="code-line"><b>11</b><span>    <q>"express"</q>: <q>"^5.1.0"</q>,</span></span>
+<span class="code-line"><b>12</b><span>    <q>"express-validator"</q>: <q>"^7.2.1"</q>,</span></span>
+<span class="code-line"><b>13</b><span>    <q>"mongoose"</q>: <q>"^8.18.0"</q></span></span>
+<span class="code-line"><b>14</b><span>  }</span></span>
+<span class="code-line"><b>15</b><span>}</span></span></code></pre>
+          </article>
+          <div class="block-summary block-summary--green">
+            <span>POR QUÉ VA PRIMERO</span>
+            <div><h3>Define cómo se ejecutará el código</h3><p>Las dependencias ya están disponibles, así que no se instala nada durante el ejercicio. Sin embargo, <code>type: module</code> y el script <code>start</code> deben existir antes de escribir archivos con <code>import</code> o ejecutar <code>npm start</code>.</p></div>
+            <dl><div><dt>Habilita</dt><dd>ES Modules</dd></div><div><dt>Comando</dt><dd>npm start</dd></div><div><dt>Estado</dt><dd>Ya preparado</dd></div></dl>
+          </div>
+
+          <button class="checkpoint" type="button" data-complete="0">
+            <span class="checkpoint__box"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg></span>
+            <span><strong>Checkpoint 00</strong> Entiendo la misión y la estructura.</span>
+          </button>
+        </section>
+
+        <section id="express" class="lesson" data-step="1">
+          <header class="lesson__header">
+            <div>
+              <span class="section-index">01 / EXPRESS + MVC · 5 MIN</span>
+              <h2>Enciende y ordena</h2>
+            </div>
+            <span class="lesson__stamp">BASE</span>
+          </header>
+          <div class="concept-strip">
+            <p><strong>Express</strong> recibe peticiones HTTP y decide qué función debe responder.</p>
+            <div class="flow-mini" aria-label="Flujo de una petición">
+              <span>Cliente</span><i>→</i><span>Ruta</span><i>→</i><span>Respuesta</span>
+            </div>
+          </div>
+          <div class="mvc-map" aria-label="Flujo de la arquitectura MVC con servicio">
+            <article><span>01</span><strong>Ruta</strong><small>Recibe método y URL</small></article>
+            <i>→</i>
+            <article><span>02</span><strong>Controlador</strong><small>Maneja req y res</small></article>
+            <i>→</i>
+            <article><span>03</span><strong>Servicio</strong><small>Ejecuta la operación</small></article>
+            <i>→</i>
+            <article><span>04</span><strong>Modelo</strong><small>Habla con MongoDB</small></article>
+            <i>→</i>
+            <article><span>05</span><strong>Vista</strong><small>JSON de respuesta</small></article>
+          </div>
+          <div class="architecture-note">
+            <strong>MVC en una API</strong>
+            <p>El <b>Modelo</b> representa los datos, el <b>Controlador</b> coordina la petición y la <b>Vista</b> es el JSON que recibe el cliente. La ruta dirige el tráfico y el servicio evita llenar el controlador con consultas de base de datos.</p>
+          </div>
+          <div class="task-callout">
+            <span>TU RETO</span>
+            <p>Crea la aplicación, permite JSON y agrega una ruta de salud que responda <code>200 OK</code>.</p>
+          </div>
+          <article class="code-panel" data-code-panel>
+            <div class="code-panel__bar">
+              <div><i></i><i></i><i></i></div>
+              <span>PASO 1 · CREA · src/app.js</span>
+              <button type="button" data-copy-code>Copiar código</button>
+            </div>
+            <pre><code><span class="code-line"><b>1</b><span><em>import</em> express <em>from</em> <q>"express"</q>; <small>// Trae la función principal de Express.</small></span></span>
+<span class="code-line"><b>2</b><span></span></span>
+<span class="code-line"><b>3</b><span><em>const</em> app = express(); <small>// Crea nuestra aplicación web.</small></span></span>
+<span class="code-line"><b>4</b><span></span></span>
+<span class="code-line"><b>5</b><span>app.use(express.json()); <small>// Convierte el JSON recibido en req.body.</small></span></span>
+<span class="code-line"><b>6</b><span></span></span>
+<span class="code-line"><b>7</b><span>app.get(<q>"/health"</q>, (req, res) =&gt; { <small>// Atiende GET /health.</small></span></span>
+<span class="code-line"><b>8</b><span>  res.status(200).json({ estado: <q>"ok"</q> }); <small>// Devuelve estado HTTP 200 y un objeto JSON.</small></span></span>
+<span class="code-line"><b>9</b><span>}); <small>// Cierra la función de la ruta.</small></span></span>
+<span class="code-line"><b>10</b><span></span></span>
+<span class="code-line"><b>11</b><span><em>export default</em> app; <small>// Permite usar app desde server.js.</small></span></span></code></pre>
+          </article>
+          <div class="block-summary">
+            <span>QUÉ HACE EL BLOQUE COMPLETO</span>
+            <div>
+              <h3>Prepara la puerta de entrada de la API</h3>
+              <p>Este archivo crea Express, activa la lectura de JSON y publica una ruta sencilla de diagnóstico. No consulta MongoDB ni contiene reglas de negocio: su trabajo es configurar la aplicación y dejarla lista para conectar las rutas MVC.</p>
+            </div>
+            <dl><div><dt>Recibe</dt><dd>Una petición HTTP</dd></div><div><dt>Procesa</dt><dd>El body como JSON</dd></div><div><dt>Entrega</dt><dd>Una respuesta JSON</dd></div></dl>
+          </div>
+          <article class="code-panel" data-code-panel>
+            <div class="code-panel__bar"><div><i></i><i></i><i></i></div><span>PASO 2 · CREA · src/server.js</span><button type="button" data-copy-code>Copiar código</button></div>
+            <pre><code><span class="code-line"><b>1</b><span><em>import</em> app <em>from</em> <q>"./app.js"</q>; <small>// Importa la aplicación preparada.</small></span></span>
+<span class="code-line"><b>2</b><span><em>const</em> PORT = 3000; <small>// Define el puerto local.</small></span></span>
+<span class="code-line"><b>3</b><span>app.listen(PORT, () =&gt; { <small>// Empieza a recibir peticiones.</small></span></span>
+<span class="code-line"><b>4</b><span>  console.log(<q>`API lista en http://localhost:${PORT}`</q>); <small>// Muestra la dirección.</small></span></span>
+<span class="code-line"><b>5</b><span>}); <small>// Cierra el arranque.</small></span></span></code></pre>
+          </article>
+          <div class="block-summary">
+            <span>QUÉ HACE EL BLOQUE COMPLETO</span>
+            <div><h3>Hace ejecutable la aplicación Express</h3><p><code>app.js</code> configura la API, pero no abre ningún puerto. Este segundo archivo ejecuta <code>app.listen</code>; desde este momento ya se puede correr <code>npm start</code> y probar <code>GET /health</code>.</p></div>
+            <dl><div><dt>Importa</dt><dd>app.js</dd></div><div><dt>Escucha</dt><dd>Puerto 3000</dd></div><div><dt>Prueba</dt><dd>GET /health</dd></div></dl>
+          </div>
+          <div class="run-check"><span>PRIMERA PRUEBA</span><code>npm start</code><i>→</i><code>curl http://localhost:3000/health</code><strong>Debe responder { "estado": "ok" }</strong></div>
+          <div class="dictionary">
+            <article><code>app.use()</code><p>Activa un middleware para todas las peticiones.</p></article>
+            <article><code>req</code><p>Contiene lo que envía el cliente.</p></article>
+            <article><code>res</code><p>Construye la respuesta del servidor.</p></article>
+          </div>
+          <button class="checkpoint" type="button" data-complete="1">
+            <span class="checkpoint__box"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg></span>
+            <span><strong>Checkpoint 01</strong> Mi servidor puede responder JSON.</span>
+          </button>
+        </section>
+
+        <section id="dto" class="lesson" data-step="2">
+          <header class="lesson__header">
+            <div>
+              <span class="section-index">02 / DTO · 5 MIN</span>
+              <h2>Decide qué datos entran</h2>
+            </div>
+            <span class="lesson__stamp lesson__stamp--coral">FILTRO</span>
+          </header>
+          <div class="split-concept">
+            <div>
+              <p class="concept-lead"><strong>DTO</strong> significa <em>Data Transfer Object</em>. Es una forma controlada de transformar los datos que llegan antes de utilizarlos.</p>
+              <div class="task-callout">
+                <span>TU RETO</span>
+                <p>Usa un DTO para crear y otro para actualizar sin permitir campos inesperados.</p>
+              </div>
+            </div>
+            <div class="before-after" aria-label="Transformación del DTO">
+              <div><span>LLEGA</span><code>{ titulo, contenido, categoria, admin }</code></div>
+              <svg viewBox="0 0 80 24" aria-hidden="true"><path d="M2 12h70m-8-8 8 8-8 8" /></svg>
+              <div><span>SALE</span><code>{ titulo, contenido, categoria }</code></div>
+            </div>
+          </div>
+          <article class="code-panel code-panel--coral" data-code-panel>
+            <div class="code-panel__bar">
+              <div><i></i><i></i><i></i></div>
+              <span>PASO 3A · CREA · src/dtos/crear-nota.dto.js</span>
+              <button type="button" data-copy-code>Copiar código</button>
+            </div>
+            <pre><code><span class="code-line"><b>1</b><span><em>export class</em> CrearNotaDTO { <small>// Define el molde de datos permitidos.</small></span></span>
+<span class="code-line"><b>2</b><span>  constructor(body) { <small>// Recibe req.body como entrada.</small></span></span>
+<span class="code-line"><b>3</b><span>    <em>this</em>.titulo = body.titulo.trim(); <small>// Guarda el título sin espacios externos.</small></span></span>
+<span class="code-line"><b>4</b><span>    <em>this</em>.contenido = body.contenido.trim(); <small>// Limpia el contenido.</small></span></span>
+<span class="code-line"><b>5</b><span>    <em>this</em>.categoria = body.categoria; <small>// Conserva la categoría validada.</small></span></span>
+<span class="code-line"><b>6</b><span>  } <small>// Cierra el constructor.</small></span></span>
+<span class="code-line"><b>7</b><span>} <small>// Cierra la clase DTO.</small></span></span></code></pre>
+          </article>
+          <div class="block-summary block-summary--coral">
+            <span>QUÉ HACE ESTE DTO COMPLETO</span>
+            <div>
+              <h3>Construye una entrada segura para POST</h3>
+              <p>Recibe todo el <code>req.body</code>, pero crea un objeto nuevo únicamente con <code>titulo</code>, <code>contenido</code> y <code>categoria</code>. Además, <code>trim()</code> quita espacios sobrantes. Cualquier campo extra desaparece antes de llegar al servicio.</p>
+            </div>
+            <dl><div><dt>Entrada</dt><dd>req.body completo</dd></div><div><dt>Transforma</dt><dd>Limpia textos</dd></div><div><dt>Salida</dt><dd>3 campos permitidos</dd></div></dl>
+          </div>
+
+          <article class="code-panel code-panel--coral" data-code-panel>
+            <div class="code-panel__bar">
+              <div><i></i><i></i><i></i></div>
+              <span>PASO 3B · CREA · src/dtos/actualizar-nota.dto.js</span>
+              <button type="button" data-copy-code>Copiar código</button>
+            </div>
+            <pre><code><span class="code-line"><b>1</b><span><em>export class</em> ActualizarNotaDTO { <small>// Molde para PATCH.</small></span></span>
+<span class="code-line"><b>2</b><span>  constructor(body) { <small>// Recibe solo los campos que el cliente quiere cambiar.</small></span></span>
+<span class="code-line"><b>3</b><span>    <em>if</em> (body.titulo !== undefined) { <small>// Comprueba si enviaron título.</small></span></span>
+<span class="code-line"><b>4</b><span>      <em>this</em>.titulo = body.titulo.trim(); <small>// Lo limpia y agrega al DTO.</small></span></span>
+<span class="code-line"><b>5</b><span>    }</span></span>
+<span class="code-line"><b>6</b><span>    <em>if</em> (body.contenido !== undefined) { <small>// Comprueba si enviaron contenido.</small></span></span>
+<span class="code-line"><b>7</b><span>      <em>this</em>.contenido = body.contenido.trim(); <small>// Agrega únicamente ese cambio.</small></span></span>
+<span class="code-line"><b>8</b><span>    }</span></span>
+<span class="code-line"><b>9</b><span>    <em>if</em> (body.categoria !== undefined) { <small>// Comprueba si enviaron categoría.</small></span></span>
+<span class="code-line"><b>10</b><span>      <em>this</em>.categoria = body.categoria; <small>// Agrega la nueva categoría.</small></span></span>
+<span class="code-line"><b>11</b><span>    }</span></span>
+<span class="code-line"><b>12</b><span>  }</span></span>
+<span class="code-line"><b>13</b><span>} <small>// El DTO final contiene solo lo que se actualizará.</small></span></span></code></pre>
+          </article>
+          <div class="block-summary block-summary--coral">
+            <span>QUÉ HACE ESTE DTO COMPLETO</span>
+            <div>
+              <h3>Permite una actualización parcial</h3>
+              <p>En un <code>PATCH</code> no es obligatorio reenviar toda la nota. Este DTO pregunta qué campos existen y copia únicamente esos valores. Así se puede cambiar solo el título sin borrar el contenido anterior.</p>
+            </div>
+            <dl><div><dt>Entrada</dt><dd>Uno o más cambios</dd></div><div><dt>Evita</dt><dd>Reemplazar lo no enviado</dd></div><div><dt>Salida</dt><dd>Objeto parcial</dd></div></dl>
+          </div>
+          <div class="insight-card">
+            <span>¿POR QUÉ IMPORTA?</span>
+            <p>Si alguien envía <code>"esAdmin": true</code>, el DTO lo ignora. Solo llegan al modelo los campos que tú decidiste aceptar.</p>
+          </div>
+          <button class="checkpoint" type="button" data-complete="2">
+            <span class="checkpoint__box"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg></span>
+            <span><strong>Checkpoint 02</strong> Mi DTO transforma y limita la entrada.</span>
+          </button>
+        </section>
+
+        <section id="validacion" class="lesson" data-step="3">
+          <header class="lesson__header">
+            <div>
+              <span class="section-index">03 / EXPRESS-VALIDATOR · 5 MIN</span>
+              <h2>Rechaza datos incorrectos</h2>
+            </div>
+            <span class="lesson__stamp lesson__stamp--yellow">GUARDIA</span>
+          </header>
+          <div class="concept-strip concept-strip--yellow">
+            <p><strong>Validar</strong> es comprobar reglas antes de guardar: requerido, longitud y valores permitidos.</p>
+            <span class="status-chip">Falla rápido → error 400</span>
+          </div>
+          <div class="task-callout">
+            <span>TU RETO</span>
+            <p>Valida el POST completo, los campos opcionales del PATCH y el ID enviado en la URL.</p>
+          </div>
+          <article class="code-panel code-panel--yellow" data-code-panel>
+            <div class="code-panel__bar">
+              <div><i></i><i></i><i></i></div>
+              <span>PASO 4A · CREA · src/validators/nota.validator.js</span>
+              <button type="button" data-copy-code>Copiar código</button>
+            </div>
+            <pre><code><span class="code-line"><b>1</b><span><em>import</em> { body, param, validationResult } <em>from</em> <q>"express-validator"</q>; <small>// Importa reglas para body, URL y errores.</small></span></span>
+<span class="code-line"><b>2</b><span><em>const</em> responderErrores = (req, res, next) =&gt; { <small>// Crea un middleware reutilizable.</small></span></span>
+<span class="code-line"><b>3</b><span>  <em>const</em> errores = validationResult(req); <small>// Reúne los errores anteriores.</small></span></span>
+<span class="code-line"><b>4</b><span>  <em>if</em> (!errores.isEmpty()) { <small>// Comprueba si falló alguna regla.</small></span></span>
+<span class="code-line"><b>5</b><span>    <em>return</em> res.status(400).json({ errores: errores.array() }); <small>// Detiene y responde 400.</small></span></span>
+<span class="code-line"><b>6</b><span>  }</span></span>
+<span class="code-line"><b>7</b><span>  next(); <small>// Sin errores: continúa al controlador.</small></span></span>
+<span class="code-line"><b>8</b><span>};</span></span>
+<span class="code-line"><b>9</b><span><em>export const</em> validarCrearNota = [ <small>// Reglas exclusivas para POST.</small></span></span>
+<span class="code-line"><b>10</b><span>  body(<q>"titulo"</q>).trim().isLength({ min: 3, max: 60 }) <small>// Limpia y mide el título.</small></span></span>
+<span class="code-line"><b>11</b><span>    .withMessage(<q>"El título debe tener entre 3 y 60 caracteres"</q>), <small>// Mensaje si falla.</small></span></span>
+<span class="code-line"><b>12</b><span>  body(<q>"contenido"</q>).trim().isLength({ min: 1, max: 280 }) <small>// Exige contenido.</small></span></span>
+<span class="code-line"><b>13</b><span>    .withMessage(<q>"El contenido debe tener entre 1 y 280 caracteres"</q>), <small>// Explica el límite.</small></span></span>
+<span class="code-line"><b>14</b><span>  body(<q>"categoria"</q>).isIn([<q>"clase"</q>, <q>"tarea"</q>, <q>"idea"</q>]) <small>// Acepta tres valores.</small></span></span>
+<span class="code-line"><b>15</b><span>    .withMessage(<q>"Categoría no válida"</q>), <small>// Mensaje de categoría.</small></span></span>
+<span class="code-line"><b>16</b><span>  responderErrores, <small>// Aplica la respuesta común.</small></span></span>
+<span class="code-line"><b>17</b><span>]; <small>// Cierra la cadena de validaciones.</small></span></span></code></pre>
+          </article>
+          <div class="block-summary block-summary--yellow">
+            <span>QUÉ HACE EL BLOQUE COMPLETO</span>
+            <div>
+              <h3>Protege la creación antes de llegar al controlador</h3>
+              <p>Las reglas inspeccionan cada campo del body. Al final, <code>validationResult(req)</code> reúne los fallos: si existen, responde <code>400</code> y detiene el flujo; si todo es válido, <code>next()</code> permite continuar hacia <code>crearNota</code>.</p>
+            </div>
+            <dl><div><dt>Comprueba</dt><dd>3 campos</dd></div><div><dt>Si falla</dt><dd>400 + errores</dd></div><div><dt>Si pasa</dt><dd>Continúa al controller</dd></div></dl>
+          </div>
+
+          <article class="code-panel code-panel--yellow" data-code-panel>
+            <div class="code-panel__bar">
+              <div><i></i><i></i><i></i></div>
+              <span>PASO 4B · CONTINÚA EL MISMO ARCHIVO · PATCH + ID</span>
+              <button type="button" data-copy-code>Copiar código</button>
+            </div>
+            <pre><code><span class="code-line"><b>1</b><span><em>export const</em> validarActualizarNota = [ <small>// Reglas para PATCH.</small></span></span>
+<span class="code-line"><b>2</b><span>  body(<q>"titulo"</q>).optional().trim().isLength({ min: 3, max: 60 }), <small>// Valida solo si llegó.</small></span></span>
+<span class="code-line"><b>3</b><span>  body(<q>"contenido"</q>).optional().trim().isLength({ min: 1, max: 280 }), <small>// También es opcional.</small></span></span>
+<span class="code-line"><b>4</b><span>  body(<q>"categoria"</q>).optional().isIn([<q>"clase"</q>, <q>"tarea"</q>, <q>"idea"</q>]), <small>// Limita valores.</small></span></span>
+<span class="code-line"><b>5</b><span>  responderErrores, <small>// Responde 400 o continúa.</small></span></span>
+<span class="code-line"><b>6</b><span>];</span></span>
+<span class="code-line"><b>7</b><span></span></span>
+<span class="code-line"><b>8</b><span><em>export const</em> validarNotaId = [ <small>// Reglas para :id.</small></span></span>
+<span class="code-line"><b>9</b><span>  param(<q>"id"</q>).isMongoId().withMessage(<q>"El id no es válido"</q>), <small>// Exige formato MongoDB.</small></span></span>
+<span class="code-line"><b>10</b><span>  responderErrores, <small>// Evita consultar con un ID incorrecto.</small></span></span>
+<span class="code-line"><b>11</b><span>];</span></span></code></pre>
+          </article>
+          <div class="block-summary block-summary--yellow">
+            <span>QUÉ HACE EL BLOQUE COMPLETO</span>
+            <div>
+              <h3>Adapta las reglas a PATCH y a la URL</h3>
+              <p><code>optional()</code> permite modificar un solo campo sin exigir los demás. <code>param("id")</code> revisa el identificador de la URL antes de consultar MongoDB, evitando errores innecesarios.</p>
+            </div>
+            <dl><div><dt>PATCH</dt><dd>Campos opcionales</dd></div><div><dt>:id</dt><dd>Formato Mongo válido</dd></div><div><dt>Resultado</dt><dd>Petición confiable</dd></div></dl>
+          </div>
+          <div class="rule-grid">
+            <article><span>titulo</span><strong>3–60</strong><small>caracteres</small></article>
+            <article><span>contenido</span><strong>1–280</strong><small>caracteres</small></article>
+            <article><span>categoria</span><strong>3</strong><small>opciones</small></article>
+          </div>
+          <button class="checkpoint" type="button" data-complete="3">
+            <span class="checkpoint__box"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg></span>
+            <span><strong>Checkpoint 03</strong> Mis entradas inválidas reciben un 400.</span>
+          </button>
+        </section>
+
+        <section id="mongodb" class="lesson" data-step="4">
+          <header class="lesson__header">
+            <div>
+              <span class="section-index">04 / CRUD + MONGODB + MVC · 12 MIN</span>
+              <h2>Completa el CRUD</h2>
+            </div>
+            <span class="lesson__stamp lesson__stamp--mint">5 ENDPOINTS</span>
+          </header>
+          <div class="split-concept">
+            <div>
+              <p class="concept-lead"><strong>CRUD</strong> resume las cuatro acciones básicas sobre datos: crear, leer, actualizar y eliminar. MongoDB guarda los documentos; MVC mantiene cada responsabilidad en su lugar.</p>
+            </div>
+            <div class="rest-map rest-map--crud">
+              <span><b>POST</b> Crear</span>
+              <span><b>GET</b> Listar</span>
+              <span><b>GET /:id</b> Obtener una</span>
+              <span><b>PATCH</b> Actualizar</span>
+              <span><b>DELETE</b> Eliminar</span>
+              <small>Una misma colección, cinco endpoints claros.</small>
+            </div>
+          </div>
+
+          <div class="route-table" aria-label="Mapa del CRUD">
+            <div class="route-table__head"><span>Método</span><span>Ruta</span><span>Acción</span><span>Respuesta</span></div>
+            <div><b class="method method--post">POST</b><code>/api/v1/notas</code><span>Crear una nota</span><strong>201</strong></div>
+            <div><b class="method method--get">GET</b><code>/api/v1/notas</code><span>Listar todas</span><strong>200</strong></div>
+            <div><b class="method method--get">GET</b><code>/api/v1/notas/:id</code><span>Buscar una</span><strong>200 / 404</strong></div>
+            <div><b class="method method--patch">PATCH</b><code>/api/v1/notas/:id</code><span>Actualizar campos</span><strong>200 / 404</strong></div>
+            <div><b class="method method--delete">DELETE</b><code>/api/v1/notas/:id</code><span>Eliminar una</span><strong>204 / 404</strong></div>
+          </div>
+
+          <div class="layer-heading"><span>CAPA 1</span><div><h3>Modelo</h3><p>Define cómo se ve una nota dentro de MongoDB.</p></div></div>
+          <article class="code-panel code-panel--mint" data-code-panel>
+            <div class="code-panel__bar"><div><i></i><i></i><i></i></div><span>PASO 5 · CREA · src/models/nota.model.js</span><button type="button" data-copy-code>Copiar código</button></div>
+            <pre><code><span class="code-line"><b>1</b><span><em>import</em> mongoose <em>from</em> <q>"mongoose"</q>; <small>// Importa el modelador de MongoDB.</small></span></span>
+<span class="code-line"><b>2</b><span><em>const</em> notaSchema = <em>new</em> mongoose.Schema({ <small>// Define la forma de cada nota.</small></span></span>
+<span class="code-line"><b>3</b><span>  titulo: { type: String, required: true }, <small>// Texto obligatorio.</small></span></span>
+<span class="code-line"><b>4</b><span>  contenido: { type: String, required: true }, <small>// Texto obligatorio.</small></span></span>
+<span class="code-line"><b>5</b><span>  categoria: { type: String, enum: [<q>"clase"</q>, <q>"tarea"</q>, <q>"idea"</q>], required: true }, <small>// Solo 3 valores y es obligatoria.</small></span></span>
+<span class="code-line"><b>6</b><span>}, { timestamps: true }); <small>// Crea fechas automáticas.</small></span></span>
+<span class="code-line"><b>7</b><span><em>export const</em> Nota = mongoose.model(<q>"Nota"</q>, notaSchema); <small>// Expone el modelo.</small></span></span></code></pre>
+          </article>
+          <div class="block-summary block-summary--mint"><span>QUÉ HACE EL MODELO COMPLETO</span><div><h3>Crea las reglas de almacenamiento</h3><p>El esquema le dice a Mongoose qué campos tendrá cada documento, qué tipo de dato usa y qué valores acepta. El modelo <code>Nota</code> es la herramienta que después utilizará el servicio para crear, buscar, actualizar y eliminar en MongoDB.</p></div><dl><div><dt>Define</dt><dd>La forma del documento</dd></div><div><dt>Protege</dt><dd>Tipos y categorías</dd></div><div><dt>Expone</dt><dd>El modelo Nota</dd></div></dl></div>
+
+          <div class="layer-heading"><span>CAPA 2</span><div><h3>Servicio</h3><p>Concentra las cinco consultas a MongoDB y no conoce <code>req</code> ni <code>res</code>.</p></div></div>
+          <article class="code-panel code-panel--mint" data-code-panel>
+            <div class="code-panel__bar"><div><i></i><i></i><i></i></div><span>PASO 6 · CREA · src/services/nota.service.js</span><button type="button" data-copy-code>Copiar código</button></div>
+            <pre><code><span class="code-line"><b>1</b><span><em>import</em> { Nota } <em>from</em> <q>"../models/nota.model.js"</q>; <small>// Trae el modelo.</small></span></span>
+<span class="code-line"><b>2</b><span><em>export const</em> notaService = { <small>// Agrupa las operaciones de datos.</small></span></span>
+<span class="code-line"><b>3</b><span>  crear: (datos) =&gt; Nota.create(datos), <small>// POST: inserta un documento.</small></span></span>
+<span class="code-line"><b>4</b><span>  listar: () =&gt; Nota.find().sort({ createdAt: -1 }), <small>// GET: trae todas.</small></span></span>
+<span class="code-line"><b>5</b><span>  buscarPorId: (id) =&gt; Nota.findById(id), <small>// GET /:id: trae una.</small></span></span>
+<span class="code-line"><b>6</b><span>  actualizar: (id, datos) =&gt; Nota.findByIdAndUpdate(id, datos, { <small>// PATCH: busca y cambia.</small></span></span>
+<span class="code-line"><b>7</b><span>    new: true, runValidators: true, <small>// Devuelve la nueva versión y valida.</small></span></span>
+<span class="code-line"><b>8</b><span>  }),</span></span>
+<span class="code-line"><b>9</b><span>  eliminar: (id) =&gt; Nota.findByIdAndDelete(id), <small>// DELETE: busca y elimina.</small></span></span>
+<span class="code-line"><b>10</b><span>}; <small>// Termina el servicio.</small></span></span></code></pre>
+          </article>
+          <div class="block-summary block-summary--mint"><span>QUÉ HACE EL SERVICIO COMPLETO</span><div><h3>Es el único lugar que conversa con el modelo</h3><p>Cada función representa una operación CRUD y devuelve la promesa de Mongoose. Al separar estas consultas, el controlador queda dedicado al protocolo HTTP y es más fácil localizar dónde se lee o modifica la base de datos.</p></div><dl><div><dt>Recibe</dt><dd>Datos o ID</dd></div><div><dt>Ejecuta</dt><dd>Consulta Mongoose</dd></div><div><dt>Devuelve</dt><dd>Documento o lista</dd></div></dl></div>
+
+          <div class="layer-heading"><span>CAPA 3</span><div><h3>Controlador</h3><p>Coordina DTO, servicio y respuesta HTTP. Aquí cada operación está separada.</p></div></div>
+
+          <div class="operation-title"><b class="method method--post">POST</b><div><h3>Bloque para crear una nota</h3><p>Usa el DTO de creación, llama al servicio y responde 201.</p></div></div>
+          <article class="code-panel code-panel--post" data-code-panel>
+            <div class="code-panel__bar"><div><i></i><i></i><i></i></div><span>PASO 7A · CREA controller · crearNota</span><button type="button" data-copy-code>Copiar código</button></div>
+            <pre><code><span class="code-line"><b>1</b><span><em>import</em> { CrearNotaDTO } <em>from</em> <q>"../dtos/crear-nota.dto.js"</q>; <small>// DTO para POST.</small></span></span>
+<span class="code-line"><b>2</b><span><em>import</em> { ActualizarNotaDTO } <em>from</em> <q>"../dtos/actualizar-nota.dto.js"</q>; <small>// DTO para PATCH.</small></span></span>
+<span class="code-line"><b>3</b><span><em>import</em> { notaService } <em>from</em> <q>"../services/nota.service.js"</q>; <small>// Operaciones de datos.</small></span></span>
+<span class="code-line"><b>4</b><span></span></span>
+<span class="code-line"><b>5</b><span><em>export async function</em> crearNota(req, res, next) { <small>// Controlador del POST.</small></span></span>
+<span class="code-line"><b>6</b><span>  <em>try</em> { <small>// Captura posibles errores.</small></span></span>
+<span class="code-line"><b>7</b><span>    <em>const</em> datos = <em>new</em> CrearNotaDTO(req.body); <small>// Filtra la entrada.</small></span></span>
+<span class="code-line"><b>8</b><span>    <em>const</em> nota = <em>await</em> notaService.crear(datos); <small>// Pide guardar al servicio.</small></span></span>
+<span class="code-line"><b>9</b><span>    res.status(201).json({ data: nota }); <small>// Devuelve la nota creada.</small></span></span>
+<span class="code-line"><b>10</b><span>  } <em>catch</em> (error) { next(error); } <small>// Delega el error.</small></span></span>
+<span class="code-line"><b>11</b><span>}</span></span></code></pre>
+          </article>
+          <div class="block-summary block-summary--post"><span>QUÉ HACE ESTE BLOQUE POST</span><div><h3>Crea un recurso nuevo</h3><p>El controlador recibe el JSON validado, lo convierte en un DTO, espera que el servicio lo guarde y construye la respuesta. El código <code>201 Created</code> confirma que nació una nueva nota.</p></div><dl><div><dt>Entrada</dt><dd>Body validado</dd></div><div><dt>Servicio</dt><dd>notaService.crear</dd></div><div><dt>Salida</dt><dd>201 + nota</dd></div></dl></div>
+
+          <div class="operation-title"><b class="method method--get">GET</b><div><h3>Bloques para leer notas</h3><p>Uno lista la colección y el otro busca un documento por ID.</p></div></div>
+          <article class="code-panel code-panel--get" data-code-panel>
+            <div class="code-panel__bar"><div><i></i><i></i><i></i></div><span>PASO 7B · CONTINÚA controller · funciones GET</span><button type="button" data-copy-code>Copiar código</button></div>
+            <pre><code><span class="code-line"><b>1</b><span><em>export async function</em> listarNotas(req, res, next) { <small>// GET de toda la colección.</small></span></span>
+<span class="code-line"><b>2</b><span>  <em>try</em> {</span></span>
+<span class="code-line"><b>3</b><span>    <em>const</em> notas = <em>await</em> notaService.listar(); <small>// Solicita la lista.</small></span></span>
+<span class="code-line"><b>4</b><span>    res.json({ data: notas }); <small>// Responde 200 automáticamente.</small></span></span>
+<span class="code-line"><b>5</b><span>  } <em>catch</em> (error) { next(error); }</span></span>
+<span class="code-line"><b>6</b><span>}</span></span>
+<span class="code-line"><b>7</b><span></span></span>
+<span class="code-line"><b>8</b><span><em>export async function</em> obtenerNota(req, res, next) { <small>// GET de una sola nota.</small></span></span>
+<span class="code-line"><b>9</b><span>  <em>try</em> {</span></span>
+<span class="code-line"><b>10</b><span>    <em>const</em> nota = <em>await</em> notaService.buscarPorId(req.params.id); <small>// Lee :id de la URL.</small></span></span>
+<span class="code-line"><b>11</b><span>    <em>if</em> (!nota) <em>return</em> res.status(404).json({ error: <q>"Nota no encontrada"</q> }); <small>// Maneja ausencia.</small></span></span>
+<span class="code-line"><b>12</b><span>    res.json({ data: nota }); <small>// Devuelve la encontrada.</small></span></span>
+<span class="code-line"><b>13</b><span>  } <em>catch</em> (error) { next(error); }</span></span>
+<span class="code-line"><b>14</b><span>}</span></span></code></pre>
+          </article>
+          <div class="block-summary block-summary--get"><span>QUÉ HACEN ESTOS BLOQUES GET</span><div><h3>Leen sin modificar información</h3><p><code>listarNotas</code> devuelve un arreglo, aunque esté vacío. <code>obtenerNota</code> utiliza <code>req.params.id</code>; si MongoDB no encuentra el documento, responde <code>404 Not Found</code>.</p></div><dl><div><dt>GET /</dt><dd>Lista completa</dd></div><div><dt>GET /:id</dt><dd>Una nota</dd></div><div><dt>No existe</dt><dd>404</dd></div></dl></div>
+
+          <div class="operation-title"><b class="method method--patch">PATCH</b><div><h3>Bloque para actualizar parcialmente</h3><p>Modifica solo los campos enviados y conserva los demás.</p></div></div>
+          <article class="code-panel code-panel--patch" data-code-panel>
+            <div class="code-panel__bar"><div><i></i><i></i><i></i></div><span>PASO 7C · CONTINÚA controller · función PATCH</span><button type="button" data-copy-code>Copiar código</button></div>
+            <pre><code><span class="code-line"><b>1</b><span><em>export async function</em> actualizarNota(req, res, next) { <small>// Controlador del PATCH.</small></span></span>
+<span class="code-line"><b>2</b><span>  <em>try</em> {</span></span>
+<span class="code-line"><b>3</b><span>    <em>const</em> datos = <em>new</em> ActualizarNotaDTO(req.body); <small>// Toma solo los cambios.</small></span></span>
+<span class="code-line"><b>4</b><span>    <em>const</em> nota = <em>await</em> notaService.actualizar(req.params.id, datos); <small>// Actualiza por ID.</small></span></span>
+<span class="code-line"><b>5</b><span>    <em>if</em> (!nota) <em>return</em> res.status(404).json({ error: <q>"Nota no encontrada"</q> }); <small>// No existía.</small></span></span>
+<span class="code-line"><b>6</b><span>    res.json({ data: nota }); <small>// Devuelve la versión actualizada.</small></span></span>
+<span class="code-line"><b>7</b><span>  } <em>catch</em> (error) { next(error); }</span></span>
+<span class="code-line"><b>8</b><span>}</span></span></code></pre>
+          </article>
+          <div class="block-summary block-summary--patch"><span>QUÉ HACE ESTE BLOQUE PATCH</span><div><h3>Edita una nota existente</h3><p>Lee el ID desde la URL y los cambios desde el body. El DTO evita reemplazar campos no enviados; el servicio aplica la actualización y el controlador devuelve el documento nuevo con código <code>200</code>.</p></div><dl><div><dt>Entrada</dt><dd>ID + cambios</dd></div><div><dt>Servicio</dt><dd>actualizar</dd></div><div><dt>Salida</dt><dd>200 o 404</dd></div></dl></div>
+
+          <div class="operation-title"><b class="method method--delete">DELETE</b><div><h3>Bloque para eliminar una nota</h3><p>Busca por ID, elimina y responde sin body.</p></div></div>
+          <article class="code-panel code-panel--delete" data-code-panel>
+            <div class="code-panel__bar"><div><i></i><i></i><i></i></div><span>PASO 7D · CONTINÚA controller · función DELETE</span><button type="button" data-copy-code>Copiar código</button></div>
+            <pre><code><span class="code-line"><b>1</b><span><em>export async function</em> eliminarNota(req, res, next) { <small>// Controlador del DELETE.</small></span></span>
+<span class="code-line"><b>2</b><span>  <em>try</em> {</span></span>
+<span class="code-line"><b>3</b><span>    <em>const</em> nota = <em>await</em> notaService.eliminar(req.params.id); <small>// Elimina por ID.</small></span></span>
+<span class="code-line"><b>4</b><span>    <em>if</em> (!nota) <em>return</em> res.status(404).json({ error: <q>"Nota no encontrada"</q> }); <small>// No existía.</small></span></span>
+<span class="code-line"><b>5</b><span>    res.status(204).send(); <small>// Éxito sin contenido.</small></span></span>
+<span class="code-line"><b>6</b><span>  } <em>catch</em> (error) { next(error); }</span></span>
+<span class="code-line"><b>7</b><span>}</span></span></code></pre>
+          </article>
+          <div class="block-summary block-summary--delete"><span>QUÉ HACE ESTE BLOQUE DELETE</span><div><h3>Elimina el recurso solicitado</h3><p>El servicio intenta borrar la nota del ID. Si existe, <code>204 No Content</code> confirma el éxito sin enviar JSON; si no existe, el cliente recibe un <code>404</code> claro.</p></div><dl><div><dt>Entrada</dt><dd>ID de la URL</dd></div><div><dt>Servicio</dt><dd>eliminar</dd></div><div><dt>Salida</dt><dd>204 o 404</dd></div></dl></div>
+
+          <div class="layer-heading"><span>CAPA 4</span><div><h3>Rutas</h3><p>Relacionan método + URL + validación + controlador. No contienen consultas.</p></div></div>
+          <article class="code-panel code-panel--mint" data-code-panel>
+            <div class="code-panel__bar"><div><i></i><i></i><i></i></div><span>PASO 8 · CREA · src/routes/nota.routes.js</span><button type="button" data-copy-code>Copiar código</button></div>
+            <pre><code><span class="code-line"><b>1</b><span><em>import</em> { Router } <em>from</em> <q>"express"</q>; <small>// Importa el enrutador.</small></span></span>
+<span class="code-line"><b>2</b><span><em>import</em> { crearNota, listarNotas, obtenerNota, actualizarNota, eliminarNota } <em>from</em> <q>"../controllers/nota.controller.js"</q>; <small>// Trae controladores.</small></span></span>
+<span class="code-line"><b>3</b><span><em>import</em> { validarCrearNota, validarActualizarNota, validarNotaId } <em>from</em> <q>"../validators/nota.validator.js"</q>; <small>// Trae validaciones.</small></span></span>
+<span class="code-line"><b>4</b><span><em>export const</em> notaRouter = Router(); <small>// Crea el enrutador.</small></span></span>
+<span class="code-line"><b>5</b><span>notaRouter.post(<q>"/"</q>, validarCrearNota, crearNota); <small>// POST → validar → crear.</small></span></span>
+<span class="code-line"><b>6</b><span>notaRouter.get(<q>"/"</q>, listarNotas); <small>// GET → listar todas.</small></span></span>
+<span class="code-line"><b>7</b><span>notaRouter.get(<q>"/:id"</q>, validarNotaId, obtenerNota); <small>// GET → validar ID → buscar una.</small></span></span>
+<span class="code-line"><b>8</b><span>notaRouter.patch(<q>"/:id"</q>, validarNotaId, validarActualizarNota, actualizarNota); <small>// PATCH → validar → actualizar.</small></span></span>
+<span class="code-line"><b>9</b><span>notaRouter.delete(<q>"/:id"</q>, validarNotaId, eliminarNota); <small>// DELETE → validar ID → eliminar.</small></span></span></code></pre>
+          </article>
+          <div class="block-summary block-summary--mint"><span>QUÉ HACE EL BLOQUE DE RUTAS</span><div><h3>Construye el mapa público de la API</h3><p>Cada línea declara qué controlador atiende una combinación de método y URL. Los middlewares de validación aparecen antes del controlador porque Express ejecuta las funciones de izquierda a derecha.</p></div><dl><div><dt>Decide</dt><dd>Qué función ejecutar</dd></div><div><dt>Ordena</dt><dd>Validación primero</dd></div><div><dt>No hace</dt><dd>Consultas directas</dd></div></dl></div>
+
+          <div class="layer-heading"><span>CAPA 5</span><div><h3>Middleware de errores</h3><p>Cierra el flujo cuando la ruta no existe o aparece un fallo inesperado.</p></div></div>
+          <article class="code-panel code-panel--mint" data-code-panel>
+            <div class="code-panel__bar"><div><i></i><i></i><i></i></div><span>PASO 9 · CREA · src/middlewares/error.middleware.js</span><button type="button" data-copy-code>Copiar código</button></div>
+            <pre><code><span class="code-line"><b>1</b><span><em>export function</em> rutaNoEncontrada(req, res) { <small>// Se ejecuta si ninguna ruta coincidió.</small></span></span>
+<span class="code-line"><b>2</b><span>  res.status(404).json({ error: <q>"Ruta no encontrada"</q> }); <small>// Respuesta clara para el cliente.</small></span></span>
+<span class="code-line"><b>3</b><span>}</span></span>
+<span class="code-line"><b>4</b><span><em>export function</em> manejarError(error, req, res, next) { <small>// Recibe errores enviados con next(error).</small></span></span>
+<span class="code-line"><b>5</b><span>  console.error(error); <small>// Registra el detalle para desarrollo.</small></span></span>
+<span class="code-line"><b>6</b><span>  res.status(500).json({ error: <q>"No fue posible completar la petición"</q> }); <small>// No expone datos internos.</small></span></span>
+<span class="code-line"><b>7</b><span>}</span></span></code></pre>
+          </article>
+          <div class="block-summary block-summary--mint"><span>QUÉ HACE EL MIDDLEWARE COMPLETO</span><div><h3>Entrega errores consistentes</h3><p>El primer middleware responde cuando la URL no pertenece a la API. El segundo recibe cualquier error delegado por los controladores y devuelve un mensaje seguro con código <code>500</code>.</p></div><dl><div><dt>Ruta desconocida</dt><dd>404</dd></div><div><dt>Fallo interno</dt><dd>500</dd></div><div><dt>Ventaja</dt><dd>Una sola salida</dd></div></dl></div>
+
+          <div class="layer-heading"><span>ENSAMBLE</span><div><h3>Integra las capas</h3><p>Ahora que todos los archivos existen, reemplaza el <code>app.js</code> básico por esta versión CRUD.</p></div></div>
+          <article class="code-panel code-panel--mint" data-code-panel>
+            <div class="code-panel__bar"><div><i></i><i></i><i></i></div><span>PASO 10 · REEMPLAZA COMPLETO · src/app.js</span><button type="button" data-copy-code>Copiar código</button></div>
+            <pre><code><span class="code-line"><b>1</b><span><em>import</em> express <em>from</em> <q>"express"</q>; <small>// Importa Express.</small></span></span>
+<span class="code-line"><b>2</b><span><em>import</em> { notaRouter } <em>from</em> <q>"./routes/nota.routes.js"</q>; <small>// Importa las rutas ya creadas.</small></span></span>
+<span class="code-line"><b>3</b><span><em>import</em> { manejarError, rutaNoEncontrada } <em>from</em> <q>"./middlewares/error.middleware.js"</q>; <small>// Importa errores.</small></span></span>
+<span class="code-line"><b>4</b><span><em>const</em> app = express(); <small>// Crea la aplicación.</small></span></span>
+<span class="code-line"><b>5</b><span>app.use(express.json()); <small>// Lee bodies JSON.</small></span></span>
+<span class="code-line"><b>6</b><span>app.get(<q>"/health"</q>, (req, res) =&gt; { <small>// Conserva la prueba inicial.</small></span></span>
+<span class="code-line"><b>7</b><span>  res.status(200).json({ estado: <q>"ok"</q> }); <small>// Confirma que responde.</small></span></span>
+<span class="code-line"><b>8</b><span>});</span></span>
+<span class="code-line"><b>9</b><span>app.use(<q>"/api/v1/notas"</q>, notaRouter); <small>// Monta los cinco endpoints CRUD.</small></span></span>
+<span class="code-line"><b>10</b><span>app.use(rutaNoEncontrada); <small>// Después de todas las rutas.</small></span></span>
+<span class="code-line"><b>11</b><span>app.use(manejarError); <small>// El manejador de errores siempre al final.</small></span></span>
+<span class="code-line"><b>12</b><span><em>export default</em> app; <small>// server.js seguirá importándolo.</small></span></span></code></pre>
+          </article>
+          <div class="block-summary block-summary--mint"><span>QUÉ HACE EL ENSAMBLE COMPLETO</span><div><h3>Conecta rutas y errores con Express</h3><p>Hasta este momento cada capa existía por separado. Este archivo las une: transforma JSON, conserva la ruta de salud, coloca todo el CRUD bajo <code>/api/v1/notas</code> y deja los errores al final del pipeline.</p></div><dl><div><dt>Antes</dt><dd>Archivos separados</dd></div><div><dt>Ahora</dt><dd>API conectada</dd></div><div><dt>Falta</dt><dd>Conectar MongoDB</dd></div></dl></div>
+
+          <div class="layer-heading"><span>ARRANQUE</span><div><h3>Conexión y servidor</h3><p>Conecta MongoDB antes de empezar a recibir peticiones.</p></div></div>
+          <article class="code-panel code-panel--mint" data-code-panel>
+            <div class="code-panel__bar"><div><i></i><i></i><i></i></div><span>PASO 11 · REEMPLAZA COMPLETO · src/server.js</span><button type="button" data-copy-code>Copiar código</button></div>
+            <pre><code><span class="code-line"><b>1</b><span><em>import</em> mongoose <em>from</em> <q>"mongoose"</q>; <small>// Importa la conexión.</small></span></span>
+<span class="code-line"><b>2</b><span><em>import</em> app <em>from</em> <q>"./app.js"</q>; <small>// Importa Express configurado.</small></span></span>
+<span class="code-line"><b>3</b><span><em>const</em> PORT = 3000; <small>// Puerto local.</small></span></span>
+<span class="code-line"><b>4</b><span><em>const</em> MONGODB_URI = <q>"mongodb://127.0.0.1:27017/api_notas_clase"</q>; <small>// Base de datos.</small></span></span>
+<span class="code-line"><b>5</b><span><em>try</em> { <small>// Controla un posible fallo de conexión.</small></span></span>
+<span class="code-line"><b>6</b><span>  <em>await</em> mongoose.connect(MONGODB_URI); <small>// Espera conexión exitosa.</small></span></span>
+<span class="code-line"><b>7</b><span>  app.listen(PORT, () =&gt; { <small>// Solo entonces enciende Express.</small></span></span>
+<span class="code-line"><b>8</b><span>    console.log(<q>`API lista en http://localhost:${PORT}`</q>); <small>// Muestra la URL.</small></span></span>
+<span class="code-line"><b>9</b><span>  });</span></span>
+<span class="code-line"><b>10</b><span>} <em>catch</em> (error) { <small>// MongoDB no respondió.</small></span></span>
+<span class="code-line"><b>11</b><span>  console.error(<q>"No fue posible conectar con MongoDB:"</q>, error.message); <small>// Explica el problema.</small></span></span>
+<span class="code-line"><b>12</b><span>  process.exit(1); <small>// Detiene un servidor que no puede trabajar.</small></span></span>
+<span class="code-line"><b>13</b><span>}</span></span></code></pre>
+          </article>
+          <div class="block-summary block-summary--mint"><span>QUÉ HACE EL BLOQUE COMPLETO</span><div><h3>Arranca en el orden correcto</h3><p>Primero establece la conexión con la base <code>api_notas_clase</code>. Solo después ejecuta <code>app.listen</code>. De esta forma la API no acepta peticiones cuando MongoDB todavía no está disponible.</p></div><dl><div><dt>Primero</dt><dd>Conecta MongoDB</dd></div><div><dt>Después</dt><dd>Escucha puerto 3000</dd></div><div><dt>Resultado</dt><dd>API disponible</dd></div></dl></div>
+
+          <div class="request-flow"><span>Ruta</span><i>→</i><span>Validación</span><i>→</i><span>DTO</span><i>→</i><span>Controlador</span><i>→</i><span>Servicio</span><i>→</i><span>Modelo</span><i>→</i><span>MongoDB</span><i>→</i><span>JSON</span></div>
+          <button class="checkpoint" type="button" data-complete="4">
+            <span class="checkpoint__box"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg></span>
+            <span><strong>Checkpoint 04</strong> Mi CRUD completo respeta las capas MVC.</span>
+          </button>
+        </section>
+
+        <section id="cookies" class="lesson" data-step="5">
+          <header class="lesson__header">
+            <div>
+              <span class="section-index">05 / COOKIES · 4 MIN</span>
+              <h2>Haz que el navegador recuerde</h2>
+            </div>
+            <span class="lesson__stamp lesson__stamp--blue">MEMORIA CORTA</span>
+          </header>
+          <div class="cookie-visual">
+            <div class="cookie-shape" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+            <div>
+              <p class="concept-lead">Una <strong>cookie</strong> es un pequeño dato que el servidor pide al navegador guardar y reenviar en próximas peticiones.</p>
+              <p>Guardaremos únicamente la última categoría usada. Nada sensible.</p>
+            </div>
+          </div>
+          <article class="code-panel code-panel--blue" data-code-panel>
+            <div class="code-panel__bar"><div><i></i><i></i><i></i></div><span>PASO 12A · REEMPLAZA SOLO crearNota · controller</span><button type="button" data-copy-code>Copiar código</button></div>
+            <pre><code><span class="code-line"><b>1</b><span><em>export async function</em> crearNota(req, res, next) { <small>// Sustituye la función POST anterior.</small></span></span>
+<span class="code-line"><b>2</b><span>  <em>try</em> {</span></span>
+<span class="code-line"><b>3</b><span>    <em>const</em> datos = <em>new</em> CrearNotaDTO(req.body); <small>// Filtra el body.</small></span></span>
+<span class="code-line"><b>4</b><span>    <em>const</em> nota = <em>await</em> notaService.crear(datos); <small>// Guarda en MongoDB.</small></span></span>
+<span class="code-line"><b>5</b><span>    res.cookie(<q>"ultimaCategoria"</q>, nota.categoria, { <small>// Pide guardar una cookie.</small></span></span>
+<span class="code-line"><b>6</b><span>      httpOnly: true, sameSite: <q>"lax"</q>, maxAge: 1000 * 60 * 60, <small>// Seguridad y duración.</small></span></span>
+<span class="code-line"><b>7</b><span>    });</span></span>
+<span class="code-line"><b>8</b><span>    res.status(201).json({ data: nota }); <small>// Mantiene la respuesta 201.</small></span></span>
+<span class="code-line"><b>9</b><span>  } <em>catch</em> (error) { next(error); }</span></span>
+<span class="code-line"><b>10</b><span>}</span></span></code></pre>
+          </article>
+          <div class="block-summary block-summary--blue">
+            <span>QUÉ HACE ESTA FUNCIÓN COMPLETA</span>
+            <div><h3>Escribe la cookie después de crear</h3><p>La función mantiene el flujo del POST y agrega <code>res.cookie()</code> después de recibir la nota guardada. Así la categoría solo se recuerda cuando la creación fue exitosa.</p></div>
+            <dl><div><dt>Momento</dt><dd>Después de MongoDB</dd></div><div><dt>Escribe</dt><dd>ultimaCategoria</dd></div><div><dt>Duración</dt><dd>1 hora</dd></div></dl>
+          </div>
+
+          <article class="code-panel code-panel--blue" data-code-panel>
+            <div class="code-panel__bar"><div><i></i><i></i><i></i></div><span>PASO 12B · REEMPLAZA COMPLETO · src/app.js</span><button type="button" data-copy-code>Copiar código</button></div>
+            <pre><code><span class="code-line"><b>1</b><span><em>import</em> express <em>from</em> <q>"express"</q>;</span></span>
+<span class="code-line"><b>2</b><span><em>import</em> cookieParser <em>from</em> <q>"cookie-parser"</q>; <small>// Nuevo: permite leer cookies.</small></span></span>
+<span class="code-line"><b>3</b><span><em>import</em> { notaRouter } <em>from</em> <q>"./routes/nota.routes.js"</q>;</span></span>
+<span class="code-line"><b>4</b><span><em>import</em> { manejarError, rutaNoEncontrada } <em>from</em> <q>"./middlewares/error.middleware.js"</q>;</span></span>
+<span class="code-line"><b>5</b><span><em>const</em> app = express();</span></span>
+<span class="code-line"><b>6</b><span>app.use(express.json());</span></span>
+<span class="code-line"><b>7</b><span>app.use(cookieParser()); <small>// Nuevo: llena req.cookies.</small></span></span>
+<span class="code-line"><b>8</b><span>app.get(<q>"/health"</q>, (req, res) =&gt; res.status(200).json({ estado: <q>"ok"</q> }));</span></span>
+<span class="code-line"><b>9</b><span>app.get(<q>"/api/v1/preferencia"</q>, (req, res) =&gt; { <small>// Nuevo: consulta la cookie.</small></span></span>
+<span class="code-line"><b>10</b><span>  res.json({ ultimaCategoria: req.cookies.ultimaCategoria ?? <em>null</em> });</span></span>
+<span class="code-line"><b>11</b><span>});</span></span>
+<span class="code-line"><b>12</b><span>app.use(<q>"/api/v1/notas"</q>, notaRouter);</span></span>
+<span class="code-line"><b>13</b><span>app.use(rutaNoEncontrada);</span></span>
+<span class="code-line"><b>14</b><span>app.use(manejarError);</span></span>
+<span class="code-line"><b>15</b><span><em>export default</em> app;</span></span></code></pre>
+          </article>
+          <div class="block-summary block-summary--blue">
+            <span>QUÉ HACE EL ARCHIVO COMPLETO</span>
+            <div><h3>Activa y consulta la memoria del navegador</h3><p>Esta es la versión anterior de <code>app.js</code> más <code>cookieParser()</code> y la ruta de preferencia. Reemplazar el archivo completo evita colocar el middleware después de las rutas o duplicar imports.</p></div>
+            <dl><div><dt>Activa</dt><dd>cookie-parser</dd></div><div><dt>Lee</dt><dd>req.cookies</dd></div><div><dt>Conserva</dt><dd>CRUD + errores</dd></div></dl>
+          </div>
+          <div class="cookie-flags">
+            <article><code>httpOnly</code><p>JavaScript del navegador no puede leerla; reduce ciertos ataques.</p></article>
+            <article><code>sameSite: "lax"</code><p>Limita cuándo se envía desde otros sitios.</p></article>
+            <article><code>?? null</code><p>Si no hay cookie, devuelve un valor explícito.</p></article>
+          </div>
+          <button class="checkpoint" type="button" data-complete="5">
+            <span class="checkpoint__box"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg></span>
+            <span><strong>Checkpoint 05</strong> Puedo escribir y leer una cookie segura.</span>
+          </button>
+        </section>
+
+        <section id="semver" class="lesson" data-step="6">
+          <header class="lesson__header">
+            <div>
+              <span class="section-index">06 / SEMVER · 3 MIN</span>
+              <h2>Comunica cuánto cambió</h2>
+            </div>
+            <span class="lesson__stamp lesson__stamp--violet">VERSIÓN</span>
+          </header>
+          <p class="concept-lead concept-lead--wide"><strong>SemVer</strong> usa tres números: <code>MAYOR.MENOR.PARCHE</code>. Cada posición explica el impacto del cambio.</p>
+          <div class="semver-display" aria-label="Versión semántica 1.0.0">
+            <button type="button" data-semver="major"><strong>1</strong><span>MAJOR</span><small>Rompe compatibilidad</small></button>
+            <i>.</i>
+            <button type="button" data-semver="minor"><strong>0</strong><span>MINOR</span><small>Función compatible</small></button>
+            <i>.</i>
+            <button type="button" data-semver="patch"><strong>0</strong><span>PATCH</span><small>Corrección compatible</small></button>
+          </div>
+          <div id="semverMessage" class="semver-message" aria-live="polite">Toca un número para ver un ejemplo.</div>
+          <article class="code-panel code-panel--violet" data-code-panel>
+            <div class="code-panel__bar">
+              <div><i></i><i></i><i></i></div>
+              <span>PASO 13 · REEMPLAZA COMPLETO · src/app.js</span>
+              <button type="button" data-copy-code>Copiar código</button>
+            </div>
+            <pre><code><span class="code-line"><b>1</b><span><em>import</em> express <em>from</em> <q>"express"</q>;</span></span>
+<span class="code-line"><b>2</b><span><em>import</em> cookieParser <em>from</em> <q>"cookie-parser"</q>;</span></span>
+<span class="code-line"><b>3</b><span><em>import</em> { notaRouter } <em>from</em> <q>"./routes/nota.routes.js"</q>;</span></span>
+<span class="code-line"><b>4</b><span><em>import</em> { manejarError, rutaNoEncontrada } <em>from</em> <q>"./middlewares/error.middleware.js"</q>;</span></span>
+<span class="code-line"><b>5</b><span><em>const</em> API_VERSION = <q>"1.0.0"</q>; <small>// Coincide con package.json.</small></span></span>
+<span class="code-line"><b>6</b><span><em>const</em> app = express();</span></span>
+<span class="code-line"><b>7</b><span>app.use(express.json());</span></span>
+<span class="code-line"><b>8</b><span>app.use(cookieParser());</span></span>
+<span class="code-line"><b>9</b><span>app.use((req, res, next) =&gt; { <small>// Nuevo: corre antes de cada ruta.</small></span></span>
+<span class="code-line"><b>10</b><span>  res.set(<q>"X-API-Version"</q>, API_VERSION); <small>// Publica la versión en un header.</small></span></span>
+<span class="code-line"><b>11</b><span>  next(); <small>// Continúa hacia health, preferencia o CRUD.</small></span></span>
+<span class="code-line"><b>12</b><span>});</span></span>
+<span class="code-line"><b>13</b><span>app.get(<q>"/health"</q>, (req, res) =&gt; {</span></span>
+<span class="code-line"><b>14</b><span>  res.status(200).json({ estado: <q>"ok"</q>, version: API_VERSION }); <small>// También muestra versión en JSON.</small></span></span>
+<span class="code-line"><b>15</b><span>});</span></span>
+<span class="code-line"><b>16</b><span>app.get(<q>"/api/v1/preferencia"</q>, (req, res) =&gt; {</span></span>
+<span class="code-line"><b>17</b><span>  res.json({ ultimaCategoria: req.cookies.ultimaCategoria ?? <em>null</em> });</span></span>
+<span class="code-line"><b>18</b><span>});</span></span>
+<span class="code-line"><b>19</b><span>app.use(<q>"/api/v1/notas"</q>, notaRouter);</span></span>
+<span class="code-line"><b>20</b><span>app.use(rutaNoEncontrada);</span></span>
+<span class="code-line"><b>21</b><span>app.use(manejarError);</span></span>
+<span class="code-line"><b>22</b><span><em>export default</em> app;</span></span></code></pre>
+          </article>
+          <div class="block-summary block-summary--violet">
+            <span>QUÉ HACE EL BLOQUE COMPLETO</span>
+            <div><h3>Entrega la versión final de app.js</h3><p>Conserva Express, CRUD, errores y cookies, y agrega el middleware de versión antes de las rutas. El valor <code>1.0.0</code> coincide con <code>package.json</code> y aparece en todas las respuestas mediante <code>X-API-Version</code>.</p></div>
+            <dl><div><dt>Formato</dt><dd>MAJOR.MINOR.PATCH</dd></div><div><dt>Versión inicial</dt><dd>1.0.0</dd></div><div><dt>Visible en</dt><dd>Header HTTP</dd></div></dl>
+          </div>
+          <div class="quick-question">
+            <span>MICRO RETO</span>
+            <p>Si agregas el campo opcional <code>favorita</code> sin romper lo anterior, ¿qué versión sigue?</p>
+            <div><button type="button" data-version-answer="1.0.1">1.0.1</button><button type="button" data-version-answer="1.1.0">1.1.0</button><button type="button" data-version-answer="2.0.0">2.0.0</button></div>
+            <small id="versionFeedback" aria-live="polite"></small>
+          </div>
+          <button class="checkpoint" type="button" data-complete="6">
+            <span class="checkpoint__box"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg></span>
+            <span><strong>Checkpoint 06</strong> Puedo diferenciar major, minor y patch.</span>
+          </button>
+        </section>
+
+        <section id="pruebas" class="lesson lesson--terminal" data-step="7">
+          <header class="lesson__header">
+            <div>
+              <span class="section-index">07 / PRUEBAS · 4 MIN</span>
+              <h2>Demuestra que funciona</h2>
+            </div>
+            <span class="lesson__stamp lesson__stamp--green">EN VIVO</span>
+          </header>
+          <div class="test-steps">
+            <article><span>1</span><p><strong>Crea</strong><code>POST /notas</code></p></article>
+            <article><span>2</span><p><strong>Lista</strong><code>GET /notas</code></p></article>
+            <article><span>3</span><p><strong>Obtén una</strong><code>GET /notas/:id</code></p></article>
+            <article><span>4</span><p><strong>Actualiza</strong><code>PATCH /notas/:id</code></p></article>
+            <article><span>5</span><p><strong>Elimina</strong><code>DELETE /notas/:id</code></p></article>
+            <article><span>6</span><p><strong>Provoca</strong><code>400 / 404</code></p></article>
+          </div>
+
+          <div class="playground">
+            <div class="request-builder">
+              <div class="request-builder__head">
+                <span>PROBAR PETICIÓN</span>
+                <span class="live-badge"><i></i> SIMULADOR LOCAL</span>
+              </div>
+              <div class="request-line">
+                <select id="methodSelect" aria-label="Método HTTP">
+                  <option value="POST">POST</option>
+                  <option value="GET">GET</option>
+                  <option value="PATCH">PATCH</option>
+                  <option value="DELETE">DELETE</option>
+                </select>
+                <select id="routeSelect" aria-label="Ruta de la API">
+                  <option value="/api/v1/notas">/api/v1/notas</option>
+                  <option value="/api/v1/notas/:id">/api/v1/notas/:id</option>
+                  <option value="/api/v1/preferencia">/api/v1/preferencia</option>
+                  <option value="/health">/health</option>
+                </select>
+              </div>
+              <label for="requestBody">Body · JSON</label>
+              <textarea id="requestBody" spellcheck="false">{
+  "titulo": "Repasar Express",
+  "contenido": "Crear una ruta POST y validarla",
+  "categoria": "clase"
+}</textarea>
+              <div class="preset-row">
+                <span>CARGAR CASO</span>
+                <button type="button" data-preset="valid">Válido</button>
+                <button type="button" data-preset="invalid">Inválido</button>
+                <button type="button" data-preset="extra">Con campo extra</button>
+                <button type="button" data-preset="update">Actualizar</button>
+              </div>
+              <button id="sendRequest" class="send-button" type="button">
+                Enviar petición
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 18-8-8 18-2-8z" /></svg>
+              </button>
+            </div>
+
+            <div class="response-console">
+              <div class="response-console__head">
+                <div><i></i><i></i><i></i></div>
+                <span>respuesta.json</span>
+                <span id="responseStatus" class="response-status">ESPERANDO</span>
+              </div>
+              <pre id="responseOutput" aria-live="polite"><span class="console-muted">// Presiona “Enviar petición” para ejecutar el flujo.</span></pre>
+              <div class="cookie-jar">
+                <span>COOKIE JAR</span>
+                <code id="cookieOutput">vacío</code>
+              </div>
+            </div>
+          </div>
+
+          <article class="code-panel code-panel--green" data-code-panel>
+            <div class="code-panel__bar">
+              <div><i></i><i></i><i></i></div>
+              <span>PASO 14 · PRUEBA · CRUD completa · terminal</span>
+              <button type="button" data-copy-code>Copiar comando</button>
+            </div>
+            <pre><code><span class="code-line"><b>1</b><span>curl -i -X POST http://localhost:3000/api/v1/notas \ <small># -i muestra headers; -X elige POST.</small></span></span>
+<span class="code-line"><b>2</b><span>  -H <q>"Content-Type: application/json"</q> \ <small># Indica que enviamos JSON.</small></span></span>
+<span class="code-line"><b>3</b><span>  -c cookies.txt \ <small># Guarda la cookie recibida en un archivo.</small></span></span>
+<span class="code-line"><b>4</b><span>  -d <q>'{"titulo":"Repasar Express","contenido":"Crear una ruta POST","categoria":"clase"}'</q> <small># -d envía el body.</small></span></span>
+<span class="code-line"><b>5</b><span></span></span>
+<span class="code-line"><b>6</b><span>curl -i http://localhost:3000/api/v1/notas <small># GET: lista todas las notas.</small></span></span>
+<span class="code-line"><b>7</b><span></span></span>
+<span class="code-line"><b>8</b><span>ID=<q>"PEGA_AQUÍ_EL_ID_CREADO"</q> <small># Guarda el _id devuelto por POST.</small></span></span>
+<span class="code-line"><b>9</b><span>curl -i http://localhost:3000/api/v1/notas/$ID <small># GET /:id: obtiene una nota.</small></span></span>
+<span class="code-line"><b>10</b><span></span></span>
+<span class="code-line"><b>11</b><span>curl -i -X PATCH http://localhost:3000/api/v1/notas/$ID \ <small># PATCH: selecciona la nota.</small></span></span>
+<span class="code-line"><b>12</b><span>  -H <q>"Content-Type: application/json"</q> -d <q>'{"titulo":"Express dominado"}'</q> <small># Cambia solo el título.</small></span></span>
+<span class="code-line"><b>13</b><span></span></span>
+<span class="code-line"><b>14</b><span>curl -i -X DELETE http://localhost:3000/api/v1/notas/$ID <small># DELETE: elimina y espera 204.</small></span></span>
+<span class="code-line"><b>15</b><span>curl -i -b cookies.txt http://localhost:3000/api/v1/preferencia <small># Reenvía y comprueba la cookie.</small></span></span></code></pre>
+          </article>
+          <div class="block-summary block-summary--green">
+            <span>QUÉ HACE EL BLOQUE DE PRUEBAS</span>
+            <div><h3>Recorre el ciclo de vida completo de una nota</h3><p>Primero crea el documento y copia su <code>_id</code>. Luego usa ese identificador para obtenerlo, modificarlo y eliminarlo. Los códigos HTTP permiten comprobar cada resultado sin adivinar qué ocurrió.</p></div>
+            <dl><div><dt>Crear</dt><dd>201</dd></div><div><dt>Leer / editar</dt><dd>200</dd></div><div><dt>Eliminar</dt><dd>204</dd></div></dl>
+          </div>
+
+          <div class="expected-results">
+            <h3>¿Qué debes observar?</h3>
+            <ul>
+              <li><span>201</span> La nota válida se guarda y regresa en <code>data</code>.</li>
+              <li><span>200</span> GET y PATCH devuelven la nota solicitada.</li>
+              <li><span>204</span> DELETE termina sin body porque el recurso ya no existe.</li>
+              <li><span>400</span> Un título corto o categoría desconocida produce errores.</li>
+              <li><span>404</span> Buscar un ID que no existe produce “Nota no encontrada”.</li>
+              <li><span>Header</span> Todas las respuestas incluyen <code>X-API-Version: 1.0.0</code>.</li>
+              <li><span>Cookie</span> La respuesta crea <code>ultimaCategoria=clase</code>.</li>
+            </ul>
+          </div>
+          <button class="checkpoint" type="button" data-complete="7">
+            <span class="checkpoint__box"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg></span>
+            <span><strong>Checkpoint final</strong> Probé CREATE, READ, UPDATE y DELETE.</span>
+          </button>
+
+          <div class="finish-card" id="finishCard">
+            <span class="finish-card__eyebrow">MISIÓN COMPLETADA</span>
+            <h2>Una API pequeña.<br />Seis conceptos conectados.</h2>
+            <p>Tu evidencia final es el CRUD completo, una validación fallida, una cookie guardada y la versión <strong>1.0.0</strong> visible.</p>
+            <button type="button" data-reset-progress>Reiniciar progreso</button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="app.js?v=4"></script>
+  </body>
+</html>
