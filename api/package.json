@@ -7,7 +7,7 @@
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
     "test": "node --test",
-    "check": "node --check src/app.js && node --check src/server.js"
+    "check": "node --check src/app.js && node --check src/server.js && node --check src/routes/nota.routes.js && node --check src/controllers/nota.controller.js && node --check src/services/nota.service.js"
   },
   "dependencies": {
     "cookie-parser": "^1.4.7",
